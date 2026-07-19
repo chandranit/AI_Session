@@ -1,5 +1,7 @@
 import os
-from opensai import OpenAI
+# pyrefly: ignore [missing-import]
+from openai import OpenAI
+# pyrefly: ignore [missing-import]
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -8,7 +10,7 @@ client = OpenAI(api_key=os.getenv("GROQ_API_KEY"),
 )
 
 response = client.responses.create(
-    model="llama-3.3-70b-versatile",
+    model="openai/gpt-oss-120b",
     input="Write a short story about a robot learning to love.",
     max_output_tokens=200,
 )
