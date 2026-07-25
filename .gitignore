@@ -1,5 +1,23 @@
-.env
+# Virtual environment
 .venv/
-.DS_Store
+venv/
+
+# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.DS_Store
+.vscode/
+.idea/
+
+# Temporary files
+*.log
+*.tmp
+*.swp
