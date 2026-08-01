@@ -1,13 +1,12 @@
-# AI Website Summarizer
+# AI CV vs JD Comparator
 
-A Python-based tool that takes a website URL, scrapes its content, and provides a concise, structured, and easy-to-understand summary. It utilizes an LLM (`llama-3.3-70b-versatile` via Groq API) to distill the key takeaways in a way that even a 10-year-old can understand (ELI10).
+A Python-based tool that compares a candidate's CV with a Job Description (JD), identifying the top 5 critical changes and 3 key tips to make the CV more relevant to the position and ATS compliant. It utilizes an LLM (`llama-3.3-70b-versatile` via Groq API).
 
 ## Features
 
-- **Web Scraping**: Extracts readable text from any given URL using `BeautifulSoup4` while ignoring irrelevant elements like scripts, styles, nav menus, and footers.
-- **AI Summarization**: Leverages the `llama-3.3-70b-versatile` model to read the content and generate a highly structured summary.
-- **Gradio Interface**: Provides a clean, interactive web UI where users can paste a URL and immediately see the generated Markdown summary.
-- **ELI10 Format**: The AI is instructed to explain concepts simply, highlight the 5-10 most important points, and provide clear sections (Main Topics, How It Works, Features, etc.).
+- **CV & JD Comparison**: Analyzes required skills, experience, missing keywords, ATS relevance, and quantifiable achievements.
+- **AI Optimization**: Leverages `llama-3.3-70b-versatile` to generate exactly 5 critical changes and 3 actionable tips in markdown format.
+- **Gradio Web Interface**: Provides a clean, interactive side-by-side text input interface to quickly test CVs against job postings.
 
 ## Prerequisites
 
@@ -16,10 +15,10 @@ A Python-based tool that takes a website URL, scrapes its content, and provides 
 
 ## Installation
 
-1. Clone this repository.
+1. Clone this repository and switch to the feature branch.
 2. Install the required dependencies (you can use a virtual environment):
    ```bash
-   pip install openai python-dotenv beautifulsoup4 requests gradio
+   pip install openai python-dotenv gradio
    ```
 3. Create a `.env` file in the root directory and add your API credentials:
    ```env
@@ -34,10 +33,11 @@ Run the app using Python:
 python app.py
 ```
 
-This will launch a local server with a Gradio interface. Open the provided local URL (usually `http://127.0.0.1:7860/`) in your browser. You can enter any website URL, and the tool will scrape and summarize it for you.
+This will launch a local server with a Gradio interface. Open the provided URL in your browser, paste the CV and JD, and click to view the optimization suggestions.
 
 ## File Structure
 
-- `app.py`: The entry point that runs the Gradio web interface.
-- `WebSummariser.py`: Contains the logic to call the LLM and the comprehensive system prompt for formatting the summary.
-- `scapper.py`: Handles fetching and cleaning the website HTML using `requests` and `BeautifulSoup`.
+- `app.py`: Entry point that runs the Gradio web interface with inputs for CV and JD text.
+- `cv_comparator.py`: Contains the comparison logic and prompt configuration for the LLM.
+
+
