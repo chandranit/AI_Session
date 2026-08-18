@@ -3,3 +3,6 @@
 .DS_Store
 __pycache__/
 *.pyc
+MasteryClock.app/
+.build/
+.swiftpm/
