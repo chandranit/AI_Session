@@ -1,8 +1,10 @@
+from asyncio import coroutines
+import os
 import json
 from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
-client = OpenAI()
+client = OpenAI(api_key=os.getenv("GROQ_API_KEY"), base_url=os.getenv("GROQ_API_BASE_URL"))
 
 PRICES = {"shoes": 799, "hat": 399, "bag": 1420, "shorts": 1299, "pants": 1699}
 
@@ -27,7 +29,7 @@ def agent(user_message):
     messages = [{"role": "user", "content": user_message}]
 
     response = client.chat.completions.create(          # ① send message + tools menu
-        model="gpt-4o-mini", messages=messages, tools=tools)
+        model="llama-3.3-70b-versatile", messages=messages, tools=tools)
     msg = response.choices[0].message
 
     if msg.tool_calls:                                  # ② did it ask for a tool?
@@ -37,7 +39,7 @@ def agent(user_message):
             result = get_price(args["item"])
             messages.append({"role": "tool", "tool_call_id": call.id, "content": result})
         response = client.chat.completions.create(      # ④ send it all back → nice answer
-            model="gpt-4o-mini", messages=messages)
+            model="llama-3.3-70b-versatile", messages=messages)
         msg = response.choices[0].message
 
     return msg.content
