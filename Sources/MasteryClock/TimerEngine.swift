@@ -40,6 +40,8 @@ class TimerEngine: ObservableObject {
     private let kCurrentSkill = "1000h_current_skill"
     private let kSoundEnabled = "1000h_sound_enabled"
     private let kSessions = "1000h_sessions"
+    private let kIsRunning = "1000h_is_running"
+    private let kSessionStartTimestamp = "1000h_session_start_timestamp"
     
     init() {
         loadFromUserDefaults()
@@ -83,6 +85,8 @@ class TimerEngine: ObservableObject {
         isRunning = true
         sessionStartTimestamp = Date()
         activeSessionDuration = 0
+        
+        saveToUserDefaults()
         
         // Timer configuration using `.common` mode to prevent UI interaction freezes
         let newTimer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
@@ -132,6 +136,8 @@ class TimerEngine: ObservableObject {
         timer = nil
         sessionStartTimestamp = nil
         activeSessionDuration = 0
+        
+        saveToUserDefaults()
         
         if soundEnabled {
             playBeep(frequency: 440.0, duration: 0.1) // A4
@@ -187,6 +193,8 @@ class TimerEngine: ObservableObject {
         defaults.set(accumulatedSeconds, forKey: kAccumulatedSeconds)
         defaults.set(currentSkill, forKey: kCurrentSkill)
         defaults.set(soundEnabled, forKey: kSoundEnabled)
+        defaults.set(isRunning, forKey: kIsRunning)
+        defaults.set(sessionStartTimestamp, forKey: kSessionStartTimestamp)
         
         if let encoded = try? JSONEncoder().encode(sessions) {
             defaults.set(encoded, forKey: kSessions)
@@ -202,6 +210,38 @@ class TimerEngine: ObservableObject {
         if let data = defaults.data(forKey: kSessions),
            let decoded = try? JSONDecoder().decode([Session].self, from: data) {
             sessions = decoded
+        }
+        
+        // Auto-recovery if the app closed unexpectedly while running
+        let savedIsRunning = defaults.bool(forKey: kIsRunning)
+        if savedIsRunning, let start = defaults.object(forKey: kSessionStartTimestamp) as? Date {
+            let delta = Date().timeIntervalSince(start)
+            if delta > 0 {
+                accumulatedSeconds += delta
+                
+                // Add the recovered session to history
+                let formatter = DateFormatter()
+                formatter.dateStyle = .short
+                formatter.timeStyle = .none
+                let dateString = formatter.string(from: start)
+                
+                formatter.dateStyle = .none
+                formatter.timeStyle = .short
+                let timeString = formatter.string(from: start)
+                
+                let recoveredSession = Session(
+                    id: UUID(),
+                    skillName: currentSkill,
+                    date: dateString,
+                    startTime: timeString,
+                    durationSeconds: delta
+                )
+                sessions.insert(recoveredSession, at: 0)
+            }
+            
+            // Clear running state since the app has launched fresh
+            defaults.set(false, forKey: kIsRunning)
+            defaults.set(nil, forKey: kSessionStartTimestamp)
         }
     }
 }
